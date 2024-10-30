@@ -1,4 +1,4 @@
-class CreateTransaction < ActiveRecord::Migration[7.2]
+class CreateTransactions < ActiveRecord::Migration[7.2]
   def change
     create_table :transactions do |t|
       t.references :user, null: false, foreign_key: { on_delete: :nullify, on_update: :cascade }

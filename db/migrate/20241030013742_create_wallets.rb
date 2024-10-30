@@ -1,4 +1,4 @@
-class CreateWallet < ActiveRecord::Migration[7.2]
+class CreateWallets < ActiveRecord::Migration[7.2]
   def change
     create_table :wallets do |t|
       t.integer :reference_id, null: false
