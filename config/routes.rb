@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post "auth/sign", to: "auth#sign"
+      post "auth/signout", to: "auth#signout"
     end
   end
 end
