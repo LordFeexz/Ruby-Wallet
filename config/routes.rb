@@ -9,8 +9,14 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v1 do
-      post "auth/sign", to: "auth#sign"
-      post "auth/signout", to: "auth#signout"
+      scope "auth" do
+        post "sign", to: "auth#sign"
+        post "signout", to: "auth#signout"
+      end
+
+      scope "transaction", middleware: Authenticator::Middleware do
+        post "", to: "transaction#create"
+      end
     end
   end
 end
