@@ -14,8 +14,9 @@ Rails.application.routes.draw do
         post "signout", to: "auth#signout"
       end
 
-      scope "transaction", middleware: Authenticator::Middleware do
+      scope "transaction" do
         post "", to: "transaction#create"
+        post "topup", to: "transaction#topup"
       end
     end
   end
