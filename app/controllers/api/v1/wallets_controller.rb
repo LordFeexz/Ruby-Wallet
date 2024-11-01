@@ -14,9 +14,9 @@ module Api
       def create
         # assume this endpoint for topup wallet
         @params = topup_params
-        payload = TopupProp.new(@params)
+        @payload = TopupProp.new(@params)
 
-        unless payload.valid?
+        unless @payload.valid?
           render json: { message: "missing parameters" }, status: :bad_request
           return
         end
@@ -28,11 +28,11 @@ module Api
             wallet = Wallet.find_by(reference_id: request.env["user"].id, reference_type: "user")
             raise NotFoundError.new("wallet not found") if wallet.nil?
 
-            wallet.balance += payload.amount
+            wallet.balance += @payload.amount
             raise InternalServerError.new("failed to update entity") unless wallet.save
 
             raise InternalServerError.new("failed to create entity") unless Transaction.new(
-              amount: payload.amount,
+              amount: @payload.amount,
               transaction_type: "debit",
               user_id: request.env["user"].id,
               context: {},
@@ -45,7 +45,6 @@ module Api
             raise ActiveRecord::Rollback
             return
           rescue => e
-            puts e
             status = :internal_server_error
             message = e.message
             raise ActiveRecord::Rollback

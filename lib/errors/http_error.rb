@@ -15,3 +15,9 @@ class InternalServerError < HttpError
     super(500, message, :internal_server_error)
   end
 end
+
+class ConflictError < HttpError
+  def initialize(message)
+    super(409, message, :conflict)
+  end
+end

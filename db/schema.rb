@@ -10,15 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_30_013808) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_01_022947) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "team_members", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id", "user_id"], name: "index_team_members_on_team_id_and_user_id", unique: true
+    t.index ["team_id"], name: "index_team_members_on_team_id"
+    t.index ["user_id"], name: "index_team_members_on_user_id"
+  end
 
   create_table "teams", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "owner_id"
     t.index ["name"], name: "unique_name", unique: true
+    t.index ["owner_id"], name: "index_teams_on_owner_id"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -48,5 +61,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_30_013808) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "team_members", "teams", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "team_members", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "teams", "users", column: "owner_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "transactions", "users", on_update: :cascade, on_delete: :nullify
 end

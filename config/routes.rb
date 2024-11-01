@@ -17,6 +17,8 @@ Rails.application.routes.draw do
       resource :transaction, only: [ :create ]
 
       resource :wallet, only: [ :create, :show ]
+
+      resource :team, only: [ :create ]
     end
   end
 end
