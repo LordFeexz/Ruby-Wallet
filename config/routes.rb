@@ -16,9 +16,13 @@ Rails.application.routes.draw do
 
       resource :transaction, only: [ :create ]
 
-      resource :wallet, only: [ :create, :show ]
+      resource :wallet, only: [ :create, :index ]
 
-      resource :team, only: [ :create ]
+      resource :team, only: [ :create, :show ] do # i dont know why but def index is not working to /api/v1/teams but def show is working
+        member do
+          get ":id", to: "teams#detail"
+        end
+      end
     end
   end
 end

@@ -1,0 +1,7 @@
+module AppConstant
+  ROLE_OWNER = 0
+  ROLE_MEMBER = 1
+
+  MAX_TEAM_MEMBERS = 10
+  MAX_TEAM_OWNED = 10
+end

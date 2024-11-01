@@ -1,7 +1,27 @@
 module Api
   module V1
     class TeamsController < ApplicationController
+      include Pagination
       use Authenticator::Middleware
+
+      def show
+        render json: {
+          data: Team
+            .where(owner_id: request.env["user"].id)
+            .limit(per_page).offset(paginate_offset),
+          page: page_no,
+          limit: per_page
+          }, status: :ok
+      end
+
+      def detail
+        team = Team.find_by(id: params[:id])
+        if team.nil?
+          render json: { message: "team not found" }, status: :not_found
+          return
+        end
+        render json: { data: team }, status: :ok
+      end
 
       def create
         @payload = CreateTeamProp.new(team_params)
@@ -11,7 +31,7 @@ module Api
           return
         end
 
-        if Team.where(owner_id: request.env["user"].id).count >= 10
+        if Team.where(owner_id: request.env["user"].id).count >= AppConstant::MAX_TEAM_OWNED
           render json: { message: "maximum number of teams reached" }, status: 409
           return
         end
