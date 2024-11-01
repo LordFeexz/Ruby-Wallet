@@ -14,10 +14,9 @@ Rails.application.routes.draw do
         post "signout", to: "auth#signout"
       end
 
-      scope "transaction" do
-        post "", to: "transaction#create"
-        post "topup", to: "transaction#topup"
-      end
+      resource :transaction, only: [ :create ]
+
+      resource :wallet, only: [ :create, :show ]
     end
   end
 end
