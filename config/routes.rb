@@ -18,10 +18,11 @@ Rails.application.routes.draw do
 
       resource :wallet, only: [ :create, :index ]
 
-      resource :team, only: [ :create, :show ] do # i dont know why but def index is not working to /api/v1/teams but def show is working
+      resource :team, only: [ :create, :show, :destroy ] do # i dont know why but def index is not working to /api/v1/teams but def show is working
         member do
           get ":id", to: "teams#detail"
           patch ":id", to: "teams#update"
+          delete ":id", to: "teams#destroy"
         end
       end
     end

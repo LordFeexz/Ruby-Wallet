@@ -105,6 +105,27 @@ module Api
         standard_json_response("ok", 200, team)
       end
 
+      def destroy
+        team = Team.find_by(id: params[:id])
+
+        if team.nil?
+          standard_json_response("team not found", 404)
+          return
+        end
+
+        if team.owner_id != request.env["user"].id
+          standard_json_response("unauthorized", 401)
+          return
+        end
+
+        unless team.destroy
+          standard_json_response("failed to delete entity", 500)
+          return
+        end
+
+        standard_json_response("ok", 200)
+      end
+
       private
 
       def team_params
