@@ -1,14 +1,15 @@
 module Api
   module V1
     class WalletsController < ApplicationController
+      include StandardResponse
       use Authenticator::Middleware
 
       def show
-        render json: {
-          data: Wallet.find_by(reference_id: request.env["user"].id, reference_type: "user")&.
-          attributes.except("reference_type")
-          },
-          status: :ok
+        standard_json_response(
+          "ok",
+          200,
+          Wallet.find_by(reference_id: request.env["user"].id, reference_type: "user")&.attributes.except("reference_type")
+          )
       end
 
       def create
@@ -21,7 +22,7 @@ module Api
           return
         end
 
-        status = :ok
+        code = 200
         message = "ok"
         ActiveRecord::Base.transaction do
           begin
@@ -40,18 +41,18 @@ module Api
             ).save
 
           rescue HttpError => e
-            status = e.status
+            code = e.status_code
             message = e.message
             raise ActiveRecord::Rollback
             return
           rescue => e
-            status = :internal_server_error
+            code = 500
             message = e.message
             raise ActiveRecord::Rollback
             return
           end
         end
-        render json: { message: message }, status: status
+        standard_json_response(message, code)
       end
 
       def topup_params

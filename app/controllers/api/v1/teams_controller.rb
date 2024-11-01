@@ -2,41 +2,43 @@ module Api
   module V1
     class TeamsController < ApplicationController
       include Pagination
+      include StandardResponse
       use Authenticator::Middleware
 
       def show
-        render json: {
-          data: Team
-            .where(owner_id: request.env["user"].id)
-            .limit(per_page).offset(paginate_offset),
-          page: page_no,
-          limit: per_page
-          }, status: :ok
+        standard_json_response(
+          "ok",
+          200,
+          Team
+          .where(owner_id: request.env["user"].id)
+          .limit(per_page).offset(paginate_offset),
+        { page: page_no, limit: per_page }
+        )
       end
 
       def detail
         team = Team.find_by(id: params[:id])
         if team.nil?
-          render json: { message: "team not found" }, status: :not_found
+          standard_json_response("team not found", 404)
           return
         end
-        render json: { data: team }, status: :ok
+        standard_json_response("ok", 200, team)
       end
 
       def create
         @payload = CreateTeamProp.new(team_params)
 
         unless @payload.valid?
-          render json: { message: "name #{@payload.errors[:name][0]}" }, status: :bad_request
+          standard_json_response("name #{@payload.errors[:name][0]}", 400)
           return
         end
 
         if Team.where(owner_id: request.env["user"].id).count >= AppConstant::MAX_TEAM_OWNED
-          render json: { message: "maximum number of teams reached" }, status: 409
+          standard_json_response("maximum number of teams reached", 409)
           return
         end
 
-        status = :created
+        code = 201
         message = "created"
 
         ActiveRecord::Base.transaction do
@@ -51,19 +53,56 @@ module Api
             ).save
 
           rescue HttpError => e
-            status = e.status
+            code = e.status_code
             message = e.message
             raise ActiveRecord::Rollback
             return
           rescue => e
-            status = :internal_server_error
+            code = 500
             message = e.message
             raise ActiveRecord::Rollback
             return
           end
         end
 
-        render json: { message: message }, status: status
+        standard_json_response(message, code, nil)
+      end
+
+      def update
+        @payload = CreateTeamProp.new(team_params)
+
+        unless @payload.valid?
+          standard_json_response("name #{@payload.errors[:name][0]}", 400)
+          return
+        end
+        team = Team.find_by(id: params[:id])
+
+        if team.nil?
+          standard_json_response("team not found", 404)
+          return
+        end
+
+        if team.owner_id != request.env["user"].id
+          standard_json_response("unauthorized", 401)
+          return
+        end
+
+        if team.name == @payload.name
+          standard_json_response("change nothing", 200, team)
+          return
+        end
+
+        if Team.find_by(name: @payload.name)
+          standard_json_response("name already exists", 409)
+          return
+        end
+
+        unless team.update(name: @payload.name)
+          standard_json_response("failed to update entity", 500)
+          return
+        end
+
+        standard_json_response("ok", 200, team)
       end
 
       private

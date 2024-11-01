@@ -10,8 +10,8 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       scope "auth" do
-        post "sign", to: "auth#sign"
-        post "signout", to: "auth#signout"
+        post "sign", to: "auths#sign"
+        post "signout", to: "auths#signout"
       end
 
       resource :transaction, only: [ :create ]
@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resource :team, only: [ :create, :show ] do # i dont know why but def index is not working to /api/v1/teams but def show is working
         member do
           get ":id", to: "teams#detail"
+          patch ":id", to: "teams#update"
         end
       end
     end

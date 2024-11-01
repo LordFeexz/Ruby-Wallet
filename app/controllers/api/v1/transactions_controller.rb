@@ -1,6 +1,7 @@
 module Api
   module V1
     class TransactionsController < ApplicationController
+      include StandardResponse
       use Authenticator::Middleware
 
       def create
@@ -8,17 +9,17 @@ module Api
 
         payload = TransferProp.new(@params)
         unless payload.valid?
-          render json: { message: "missing parameters" }, status: :bad_request
+          standard_json_response("missing parameters", 400)
           return
         end
 
         to, amount, text = payload.values_at(:to, :amount, :text)
         if to == request.env["user"].id
-          render json: { message: "cannot transfer to yourself" }, status: :bad_request
+          standard_json_response("cannot transfer to yourself", 400)
           return
         end
 
-        status = :ok
+        code = 200
         message = "ok"
         ActiveRecord::Base.transaction do
           begin
@@ -47,20 +48,19 @@ module Api
             end
 
           rescue HttpError => e
-            status = e.status
+            code = e.status_code
             message = e.message
             raise ActiveRecord::Rollback
             return
           rescue => e
-            puts e
-            status = :internal_server_error
+            code = 500
             message = e.message
             raise ActiveRecord::Rollback
             return
           end
         end
 
-        render json: { message: message }, status: status
+        standard_json_response(message, code)
       end
 
       private
