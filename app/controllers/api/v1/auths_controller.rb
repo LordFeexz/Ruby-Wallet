@@ -32,10 +32,10 @@ module Api
               unless user.save
                 raise BadRequestError.new(user.errors[:password_digest][0]) if user.errors[:password_digest].include?("must include at least one lowercase letter, one uppercase letter, one digit, and one special character")
 
-                raise InternalServerError.new("failed to create entity")
+                raise UnprocessableEntityError.new("failed to create entity")
               end
 
-              raise InternalServerError.new("failed to create entity") unless Wallet.create(
+              raise UnprocessableEntityError.new("failed to create entity") unless Wallet.create(
                 reference_id: user.id,
                 balance: 0,
                 reference_type: "user"

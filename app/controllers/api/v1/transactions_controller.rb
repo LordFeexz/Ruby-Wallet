@@ -34,7 +34,7 @@ module Api
             current_wallet.balance -= amount
             target_wallet.balance += amount
 
-            raise InternalServerError.new("failed to update entity") unless current_wallet.save && target_wallet.save
+            raise UnprocessableEntityError.new("failed to update entity") unless current_wallet.save && target_wallet.save
 
             [ "credit", "debit" ].each do |val|
               transaction = Transaction.new(
@@ -44,7 +44,7 @@ module Api
                 context: { from: session[:user_session_id], to: to },
                 user_id: val == "credit" ? session[:user_session_id] : to
               )
-              raise InternalServerError.new("failed to create entity") unless transaction.save
+              raise UnprocessableEntityError.new("failed to create entity") unless transaction.save
             end
 
           rescue HttpError => e

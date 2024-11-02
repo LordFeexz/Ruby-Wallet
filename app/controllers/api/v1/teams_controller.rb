@@ -44,9 +44,9 @@ module Api
         ActiveRecord::Base.transaction do
           begin
             team = Team.new(name: @payload.name, owner_id: request.env["user"].id)
-            raise InternalServerError.new("failed to create entity") unless team.save
+            raise UnprocessableEntityError.new("failed to create entity") unless team.save
 
-            raise InternalServerError.new("failed to create entity") unless TeamMember.new(
+            raise UnprocessableEntityError.new("failed to create entity") unless TeamMember.new(
               team_id: team.id,
               user_id: request.env["user"].id,
               role: 0

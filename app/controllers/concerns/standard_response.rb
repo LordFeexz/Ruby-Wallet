@@ -1,7 +1,12 @@
 module StandardResponse
   extend ActiveSupport::Concern
 
-  def standard_json_response(message = "Success", status_code = 200, data = nil, metadata = {})
+  def standard_json_response(
+    message = "Success",
+    status_code = 200,
+    data = nil,
+    metadata = {}
+    )
     response_data = {
       status_code: status_code,
       message: message,

@@ -30,9 +30,9 @@ module Api
             raise NotFoundError.new("wallet not found") if wallet.nil?
 
             wallet.balance += @payload.amount
-            raise InternalServerError.new("failed to update entity") unless wallet.save
+            raise UnprocessableEntityError.new("failed to update entity") unless wallet.save
 
-            raise InternalServerError.new("failed to create entity") unless Transaction.new(
+            raise UnprocessableEntityError.new("failed to create entity") unless Transaction.new(
               amount: @payload.amount,
               transaction_type: "debit",
               user_id: request.env["user"].id,
@@ -54,6 +54,8 @@ module Api
         end
         standard_json_response(message, code)
       end
+
+      private
 
       def topup_params
         params.permit(:amount)

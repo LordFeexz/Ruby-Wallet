@@ -25,6 +25,8 @@ Rails.application.routes.draw do
           delete ":id", to: "teams#destroy"
         end
       end
+
+      resource :price, only: [ :show ]
     end
   end
 end

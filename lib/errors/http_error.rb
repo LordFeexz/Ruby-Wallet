@@ -21,3 +21,33 @@ class ConflictError < HttpError
     super(409, message, :conflict)
   end
 end
+
+class UnauthorizedError < HttpError
+  def initialize(message)
+    super(401, message, :unauthorized)
+  end
+end
+
+class ForbiddenError < HttpError
+  def initialize(message)
+    super(403, message, :forbidden)
+  end
+end
+
+class TooManyRequestsError < HttpError
+  def initialize(message)
+    super(429, message, :too_many_requests)
+  end
+end
+
+class UnprocessableEntityError < HttpError
+  def initialize(message)
+    super(422, message, :unprocessable_entity)
+  end
+end
+
+class BadGatewayError < HttpError
+  def initialize(message)
+    super(502, message, :bad_gateway)
+  end
+end
