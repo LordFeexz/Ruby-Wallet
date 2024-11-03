@@ -25,7 +25,7 @@ module Api
         message = "ok"
         ActiveRecord::Base.transaction do
           begin
-            wallet = Wallet.find_by(reference_id: request.env["user"].id, reference_type: "user")
+            wallet = Wallet.lock("FOR UPDATE").find_by(reference_id: request.env["user"].id, reference_type: "user")
             raise NotFoundError.new("wallet not found") if wallet.nil?
 
             wallet.balance += @payload.amount

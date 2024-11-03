@@ -6,7 +6,6 @@ module Authenticator
 
     def call(env)
       request = Rack::Request.new(env)
-      puts request.session[:user_session_id]
       if request.session[:user_session_id].nil?
         return  [ 401, { "Content-Type" => "application/json" }, [ { message: "unauthorized" }.to_json ] ]
       end

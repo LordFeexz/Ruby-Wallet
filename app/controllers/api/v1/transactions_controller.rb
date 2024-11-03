@@ -22,13 +22,17 @@ module Api
         message = "ok"
         ActiveRecord::Base.transaction do
           begin
-            current_wallet = Wallet.find_by(reference_id: request.env["user"].id, reference_type: "user")
+            wallets = Wallet
+              .where(reference_id: [ request.env["user"].id, to ], reference_type: "user")
+              .lock("FOR UPDATE")
+
+            current_wallet = wallets.find { |wallet| wallet.reference_id == request.env["user"].id }
+            target_wallet = wallets.find { |wallet| wallet.reference_id == to }
+
             raise NotFoundError.new("current wallet not found") if current_wallet.nil?
+            raise NotFoundError.new("target wallet not found") if target_wallet.nil?
 
             raise BadRequestError.new("insufficient balance") if current_wallet.balance < amount
-
-            target_wallet = Wallet.find_by(reference_id: to, reference_type: "user")
-            raise NotFoundError.new("target wallet not found") if target_wallet.nil?
 
             current_wallet.balance -= amount
             target_wallet.balance += amount
