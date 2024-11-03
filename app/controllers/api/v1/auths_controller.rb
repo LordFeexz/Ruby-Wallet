@@ -15,10 +15,6 @@ module Api
         end
 
         username, password = @payload.values_at(:username, :password)
-        if username.blank? || password.blank?
-          standard_json_response("missing credentials", 400)
-          return
-        end
 
         code = 200
         message = "signed in"
