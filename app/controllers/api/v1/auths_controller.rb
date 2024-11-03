@@ -1,8 +1,6 @@
 module Api
   module V1
     class AuthsController < ApplicationController
-      include StandardResponse
-
       def sign
         if session[:user_session_id].present?
           standard_json_response("already signed in", 200)

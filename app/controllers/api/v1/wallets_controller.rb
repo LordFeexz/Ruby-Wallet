@@ -1,7 +1,6 @@
 module Api
   module V1
     class WalletsController < ApplicationController
-      include StandardResponse
       use Authenticator::Middleware
 
       def show

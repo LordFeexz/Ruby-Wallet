@@ -1,7 +1,6 @@
 module Api
   module V1
     class TransactionsController < ApplicationController
-      include StandardResponse
       use Authenticator::Middleware
 
       def create

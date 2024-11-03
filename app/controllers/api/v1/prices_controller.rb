@@ -3,8 +3,6 @@ require_relative "../../../../../Ruby-Wallet/lib/latest_stock_price.rb"
 module Api
   module V1
     class PricesController < ApplicationController
-      include StandardResponse
-
       def show
         latest_stock_price = LatestStockPrice.instance
 

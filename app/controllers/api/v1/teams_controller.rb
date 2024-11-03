@@ -1,8 +1,6 @@
 module Api
   module V1
     class TeamsController < ApplicationController
-      include Pagination
-      include StandardResponse
       use Authenticator::Middleware
 
       def show

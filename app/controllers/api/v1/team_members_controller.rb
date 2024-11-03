@@ -1,7 +1,6 @@
 module Api
   module V1
     class TeamMembersController < ApplicationController
-      include StandardResponse
       use Authenticator::Middleware
 
       before_action :numeric_params_id, only: [ :join, :leave ]
