@@ -10,7 +10,6 @@ module Api
           "ok",
           200,
           Team
-          .where(owner_id: request.env["user"].id)
           .limit(per_page).offset(paginate_offset),
         { page: page_no, limit: per_page }
         )

@@ -14,6 +14,11 @@ Rails.application.routes.draw do
         post "signout", to: "auths#signout"
       end
 
+      scope "team-member" do
+        post ":id", to: "team_members#join"
+        delete ":id", to: "team_members#leave"
+      end
+
       resource :transaction, only: [ :create ]
 
       resource :wallet, only: [ :create, :show ]
