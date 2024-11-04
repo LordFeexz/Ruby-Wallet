@@ -22,6 +22,7 @@ module Api
         message = "ok"
         ActiveRecord::Base.transaction do
           begin
+            # select 2 wallets in one query and lock them to avoid deadlock
             wallets = Wallet
               .where(reference_id: [ request.env["user"].id, to ], reference_type: "user")
               .lock("FOR UPDATE")
